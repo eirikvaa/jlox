@@ -1,0 +1,7 @@
+class A {
+    fun test() {
+        print("test");
+    }
+}
+
+A().test();
