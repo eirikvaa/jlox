@@ -1,7 +1,1 @@
-class A {
-    fun test() {
-        print("test");
-    }
-}
-
-A().test();
+var test = "Hello, world!";

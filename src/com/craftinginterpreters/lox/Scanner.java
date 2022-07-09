@@ -10,8 +10,11 @@ import static com.craftinginterpreters.lox.TokenType.*;
 class Scanner {
     private final String source;
     private final List<Token> tokens = new ArrayList<>();
+    // The index of the first character of the lexeme being scanned.
     private int start = 0;
+    // The index of the current character of the lexeme being scanned.
     private int current = 0;
+    // Tracks which line the current character is on.
     private int line = 1;
 
     private static final Map<String, TokenType> keywords;
@@ -56,20 +59,48 @@ class Scanner {
         char c = advance();
 
         switch (c) {
-            case '(': addToken(LEFT_PAREN); break;
-            case ')': addToken(RIGHT_PAREN); break;
-            case '{': addToken(LEFT_BRACE); break;
-            case '}': addToken(RIGHT_BRACE); break;
-            case ',': addToken(COMMA); break;
-            case '.': addToken(DOT); break;
-            case '-': addToken(MINUS); break;
-            case '+': addToken(PLUS); break;
-            case ';': addToken(SEMICOLON); break;
-            case '*': addToken(STAR); break;
-            case '!': addToken(match('=') ? BANG_EQUAL : BANG); break;
-            case '=': addToken(match('=') ? EQUAL_EQUAL : EQUAL); break;
-            case '<': addToken(match('=') ? LESS_EQUAL : LESS); break;
-            case '>': addToken(match('=') ? GREATER_EQUAL : GREATER); break;
+            case '(':
+                addToken(LEFT_PAREN);
+                break;
+            case ')':
+                addToken(RIGHT_PAREN);
+                break;
+            case '{':
+                addToken(LEFT_BRACE);
+                break;
+            case '}':
+                addToken(RIGHT_BRACE);
+                break;
+            case ',':
+                addToken(COMMA);
+                break;
+            case '.':
+                addToken(DOT);
+                break;
+            case '-':
+                addToken(MINUS);
+                break;
+            case '+':
+                addToken(PLUS);
+                break;
+            case ';':
+                addToken(SEMICOLON);
+                break;
+            case '*':
+                addToken(STAR);
+                break;
+            case '!':
+                addToken(match('=') ? BANG_EQUAL : BANG);
+                break;
+            case '=':
+                addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+                break;
+            case '<':
+                addToken(match('=') ? LESS_EQUAL : LESS);
+                break;
+            case '>':
+                addToken(match('=') ? GREATER_EQUAL : GREATER);
+                break;
             case '/':
                 if (match('/')) {
                     // A comment goes until the end of the line.
@@ -86,11 +117,18 @@ class Scanner {
             case '\n':
                 line++;
                 break;
-            case '"': string(); break;
+            case '"':
+                string();
+                break;
             default:
                 if (isDigit(c)) {
                     number();
                 } else if (isAlpha(c)) {
+                    // There is a reason why we don't match on something like 'o' => OR and instead
+                    // match identifiers in the default block. The principle is called maximal munch
+                    // and means that when there are two lexical grammar rules that both match, we
+                    // want the grammar rule that matches the most characters to win. So, when matching
+                    // between 'orchid' and 'OR', we want the former to win since it's longer.
                     identifier();
                 } else {
                     Lox.error(line, "Unexpected character.");
@@ -103,19 +141,18 @@ class Scanner {
         while (isAlphaNumeric(peek())) advance();
 
         String text = source.substring(start, current);
-
         TokenType type = keywords.get(text);
         if (type == null) type = IDENTIFIER;
-
         addToken(type);
     }
 
     private void number() {
+        // Make sure that we peek at the next character and if we see
+        // a number, only then should we advance.
         while (isDigit(peek())) advance();
 
         // Look for a fractional part
         if (peek() == '.' && isDigit(peekNext())) {
-
             // Consume the "."
             advance();
 
@@ -128,11 +165,15 @@ class Scanner {
     // A consequence of the implementation below is that Lox supports
     // multi-line strings.
     private void string() {
+        // Keep going until we 1) find an ending quotation mark or 2) we hit the
+        // end of the file.
         while (peek() != '"' && !isAtEnd()) {
             if (peek() == '\n') line++;
             advance();
         }
 
+        // This means we didn't find an ending quotation mark, so we hit the
+        // end of the file.
         if (isAtEnd()) {
             Lox.error(line, "Unterminated string.");
             return;
@@ -140,6 +181,8 @@ class Scanner {
 
         advance();
 
+        // Increase start by one to drop the starting quotation mark
+        // and decrease currenet by one to drop the ending quotation mark.
         String value = source.substring(start + 1, current - 1);
         addToken(STRING, value);
     }
@@ -166,26 +209,32 @@ class Scanner {
     }
 
     private boolean isAlphaNumeric(char c) {
-        return isAlpha(c) ||isDigit(c);
+        return isAlpha(c) || isDigit(c);
     }
 
     private boolean isDigit(char c) {
         return c >= '0' && c <= '9';
     }
 
+    // match is like a conditional advance; we only consume the current
+    // character if it's what we're looking for.
     private boolean match(char expected) {
         if (isAtEnd()) return false;
         if (source.charAt(current) != expected) return false;
 
-        current ++;
+        current++;
         return true;
     }
 
+    // The last valid index is one less than the length of the source string,
+    // so hitting that or anyone beyond it is an invalid index, hence we're at
+    // the end.
     private boolean isAtEnd() {
         return current >= source.length();
     }
 
-    // Eat the next character in the source code and return it.
+    // Consume the next character in the source code and return it.
+    // This is for input.
     private char advance() {
         current++;
 
@@ -197,6 +246,7 @@ class Scanner {
     }
 
     // Tokenize the current lexeme.
+    // This is for output.
     private void addToken(TokenType type) {
         addToken(type, null);
     }
