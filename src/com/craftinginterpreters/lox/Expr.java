@@ -24,6 +24,7 @@ abstract class Expr {
             this.value = value;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitAssignExpr(this);
         }
@@ -39,6 +40,7 @@ abstract class Expr {
             this.right = right;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitBinaryExpr(this);
         }
@@ -55,6 +57,7 @@ abstract class Expr {
             this.arguments = arguments;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitCallExpr(this);
         }
@@ -70,6 +73,7 @@ abstract class Expr {
             this.name = name;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitGetExpr(this);
         }
@@ -83,6 +87,7 @@ abstract class Expr {
             this.expression = expression;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitGroupingExpr(this);
         }
@@ -95,6 +100,7 @@ abstract class Expr {
             this.value = value;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitLiteralExpr(this);
         }
@@ -109,6 +115,7 @@ abstract class Expr {
             this.right = right;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitLogicalExpr(this);
         }
@@ -125,6 +132,7 @@ abstract class Expr {
             this.value = value;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitSetExpr(this);
         }
@@ -140,6 +148,7 @@ abstract class Expr {
             this.method = method;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitSuperExpr(this);
         }
@@ -153,6 +162,7 @@ abstract class Expr {
             this.keyword = keyword;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitThisExpr(this);
         }
@@ -166,6 +176,7 @@ abstract class Expr {
             this.right = right;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitUnaryExpr(this);
         }
@@ -179,6 +190,7 @@ abstract class Expr {
             this.name = name;
         }
 
+        @Override
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitVariableExpr(this);
         }

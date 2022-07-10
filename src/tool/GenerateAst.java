@@ -9,7 +9,7 @@ public class GenerateAst {
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
             System.err.println("Usage: generate_ast <output directory>");
-            System.exit(1);
+            System.exit(64);
         }
 
         String outputDir = args[0];
@@ -47,9 +47,9 @@ public class GenerateAst {
         PrintWriter writer = new PrintWriter(path, "UTF-8");
 
         writer.println("package com.craftinginterpreters.lox;");
-        writer.println("");
+        writer.println();
         writer.println("import java.util.List;");
-        writer.println("");
+        writer.println();
         writer.println("abstract class " + baseName + " {");
 
         defineVisitor(writer, baseName, types);
@@ -62,7 +62,7 @@ public class GenerateAst {
         }
 
         // The base accept() method.
-        writer.println("");
+        writer.println();
         writer.println("    abstract <R> R accept(Visitor<R> visitor);");
 
         writer.println("}");
@@ -81,7 +81,7 @@ public class GenerateAst {
     }
 
     private static void defineType(PrintWriter writer, String baseName, String className, String fieldList) {
-        writer.println("");
+        writer.println();
         writer.println("    static class " + className + " extends " + baseName + " {");
 
         // Constructor.
@@ -98,6 +98,7 @@ public class GenerateAst {
 
         // Visitor pattern.
         writer.println();
+        writer.println("        @Override");
         writer.println("        <R> R accept(Visitor<R> visitor) {");
         writer.println("            return visitor.visit" + className + baseName + "(this);");
         writer.println("        }");

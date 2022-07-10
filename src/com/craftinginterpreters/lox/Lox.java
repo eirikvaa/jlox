@@ -35,7 +35,7 @@ public class Lox {
         InputStreamReader input = new InputStreamReader(System.in);
         BufferedReader reader = new BufferedReader(input);
 
-        for (;;) {
+        for (; ; ) {
             System.out.println("> ");
             run(reader.readLine());
 
@@ -83,7 +83,7 @@ public class Lox {
 
     static void runtimeError(RuntimeError error) {
         System.err.println(error.getMessage() +
-            "\n[line " + error.token.line + "]");
+                "\n[line " + error.token.line + "]");
         hadRuntimeError = true;
     }
 }
