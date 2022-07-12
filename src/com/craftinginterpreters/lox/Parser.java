@@ -8,7 +8,6 @@ import static com.craftinginterpreters.lox.TokenType.*;
 
 class Parser {
     private static class ParseError extends RuntimeException {
-
     }
 
     private final List<Token> tokens;
@@ -272,36 +271,35 @@ class Parser {
     }
 
     private Expr comparison() {
-        Expr expr = addition();
+        Expr expr = term();
 
         while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
             Token operator = previous();
-            Expr right = addition();
+            Expr right = term();
             expr = new Expr.Binary(expr, operator, right);
         }
 
         return expr;
     }
 
-    private Expr addition() {
-        Expr expr = multiplication();
+    private Expr term() {
+        Expr expr = factor();
 
         while (match(MINUS, PLUS)) {
             Token operator = previous();
-            Expr right = multiplication();
+            Expr right = factor();
             expr = new Expr.Binary(expr, operator, right);
         }
 
         return expr;
     }
 
-    private Expr multiplication() {
+    private Expr factor() {
         Expr expr = unary();
 
         while (match(SLASH, STAR)) {
             Token operator = previous();
             Expr right = unary();
-
             expr = new Expr.Binary(expr, operator, right);
         }
 
@@ -403,13 +401,13 @@ class Parser {
 
             switch (peek().type) {
                 case CLASS:
-                case FUN:
-                case VAR:
                 case FOR:
+                case FUN:
                 case IF:
-                case WHILE:
                 case PRINT:
                 case RETURN:
+                case VAR:
+                case WHILE:
                     return;
             }
 
